@@ -20,4 +20,4 @@ Swipe Up: swipes up<br>
 Swipe Down: swipes down<br>
 Block: blocks an account by clicking on the profile picture<br>
 Block Live: blocks an account by swiping to the left<br>
-Comment: open comment for `n` seconds
+Comment: open comment for `n` seconds and then closes it
