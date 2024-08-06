@@ -11,6 +11,7 @@ ttswipedown = os.path.join(script_path, 'ttswipedown.sh')
 ttblock = os.path.join(script_path, 'ttblock.sh')
 ttliveblock = os.path.join(script_path, 'ttliveblock.sh')
 ttcomment = os.path.join(script_path, 'ttcomment.sh')
+ttback = os.path.join(script_path, 'ttback.sh')
 
 # Command to execute the script with sudo
 ttswipeup_command = ['sudo', ttswipeup]
@@ -18,6 +19,7 @@ ttswipedown_command = ['sudo', ttswipedown]
 ttblock_command = ['sudo', ttblock]
 ttliveblock_command = ['sudo', ttliveblock]
 ttcomment_command = ['sudo', ttcomment]
+ttback_command = ['sudo', ttback]
 
 app = Flask(__name__)
 
@@ -39,6 +41,9 @@ def index():
         </form>
         <form method="POST" action="/run-script5">
             <button type="submit" class="button">Comment</button>
+        </form>
+        <form method="POST" action="/run-script6">
+            <button type="submit" class="button">Back</button>
         </form>
         <div id="output"></div>
     '''
@@ -63,6 +68,9 @@ def run_script4():
 def run_script5():
     return run_script(ttcomment_command)
 
+@app.route('/run-script6', methods=['POST'])
+def run_script6():
+    return run_script(ttback_command)
 
 def run_script(command):
     try:
@@ -84,6 +92,9 @@ def run_script(command):
         </form>
         <form method="POST" action="/run-script5">
             <button type="submit" class="button">Comment</button>
+        </form>
+        <form method="POST" action="/run-script6">
+            <button type="submit" class="button">Back</button>
         </form>
             <div id="output">
                 <h3>Script output:</h3>
@@ -109,6 +120,9 @@ def run_script(command):
         <form method="POST" action="/run-script5">
             <button type="submit" class="button">Comment</button>
         </form>
+        <form method="POST" action="/run-script6">
+            <button type="submit" class="button">Back</button>
+        </form>
             <div id="output">
                 <h3>An error occurred:</h3>
                 <pre>{error}</pre>
@@ -117,3 +131,4 @@ def run_script(command):
 
 if __name__ == '__main__':
     app.run(debug=True, port=8000)
+
