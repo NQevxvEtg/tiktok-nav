@@ -1,133 +1,45 @@
-from flask import Flask, request
+from flask import Flask, render_template, request
 import subprocess
 import os
 
-home_path = os.path.expanduser("~")
-
-script_path = home_path + '/path/'
-
-ttswipeup = os.path.join(script_path, 'ttswipeup.sh')
-ttswipedown = os.path.join(script_path, 'ttswipedown.sh')
-ttblock = os.path.join(script_path, 'ttblock.sh')
-ttliveblock = os.path.join(script_path, 'ttliveblock.sh')
-ttcomment = os.path.join(script_path, 'ttcomment.sh')
-ttback = os.path.join(script_path, 'ttback.sh')
-
-# Command to execute the script with sudo
-ttswipeup_command = ['sudo', ttswipeup]
-ttswipedown_command = ['sudo', ttswipedown]
-ttblock_command = ['sudo', ttblock]
-ttliveblock_command = ['sudo', ttliveblock]
-ttcomment_command = ['sudo', ttcomment]
-ttback_command = ['sudo', ttback]
-
 app = Flask(__name__)
+
+# Define commands
+home_path = os.path.expanduser("~")
+script_path = os.path.join(home_path, 'path')
+
+commands = {
+    'Swipe Up': ['sudo', os.path.join(script_path, 'ttswipeup.sh')],
+    'Swipe Down': ['sudo', os.path.join(script_path, 'ttswipedown.sh')],
+    'Block': ['sudo', os.path.join(script_path, 'ttblock.sh')],
+    'Block Live': ['sudo', os.path.join(script_path, 'ttliveblock.sh')],
+    'Comment': ['sudo', os.path.join(script_path, 'ttcomment.sh')],
+    'Back': ['sudo', os.path.join(script_path, 'ttback.sh')],
+}
 
 @app.route('/')
 def index():
-    return '''
-    <link rel="stylesheet" type="text/css" href="/static/styles.css">
-        <form method="POST" action="/run-script1">
-            <button type="submit" class="button">Swipe Up</button>
-        </form>
-        <form method="POST" action="/run-script2">
-            <button type="submit" class="button">Swipe Down</button>
-        </form>
-        <form method="POST" action="/run-script3">
-            <button type="submit" class="button">Block</button>
-        </form>
-        <form method="POST" action="/run-script4">
-            <button type="submit" class="button">Block Live</button>
-        </form>
-        <form method="POST" action="/run-script5">
-            <button type="submit" class="button">Comment</button>
-        </form>
-        <form method="POST" action="/run-script6">
-            <button type="submit" class="button">Back</button>
-        </form>
-        <div id="output"></div>
-    '''
+    buttons = [(label, f"/run-script/{label.replace(' ', '-').lower()}") for label in commands.keys()]
+    return render_template('index.html', buttons=buttons)
 
-@app.route('/run-script1', methods=['POST'])
-def run_script1():
-    return run_script(ttswipeup_command)
+@app.route('/run-script/<script>', methods=['POST'])
+def run_script(script):
+    script_name = script.replace('-', ' ').title()
+    command = commands.get(script_name)
+    
+    if command:
+        try:
+            result = subprocess.run(command, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            output = result.stdout.decode('utf-8')
+            return render_template('index.html', buttons=get_buttons(), output=output)
+        except subprocess.CalledProcessError as e:
+            error = e.stderr.decode('utf-8')
+            return render_template('index.html', buttons=get_buttons(), error=error)
+    else:
+        return "Invalid script", 404
 
-@app.route('/run-script2', methods=['POST'])
-def run_script2():
-    return run_script(ttswipedown_command)
-
-@app.route('/run-script3', methods=['POST'])
-def run_script3():
-    return run_script(ttblock_command)
-
-@app.route('/run-script4', methods=['POST'])
-def run_script4():
-    return run_script(ttliveblock_command)
-
-@app.route('/run-script5', methods=['POST'])
-def run_script5():
-    return run_script(ttcomment_command)
-
-@app.route('/run-script6', methods=['POST'])
-def run_script6():
-    return run_script(ttback_command)
-
-def run_script(command):
-    try:
-        result = subprocess.run(command, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        output = result.stdout.decode('utf-8')
-        return f'''
-        <link rel="stylesheet" type="text/css" href="/static/styles.css">
-        <form method="POST" action="/run-script1">
-            <button type="submit" class="button">Swipe Up</button>
-        </form>
-        <form method="POST" action="/run-script2">
-            <button type="submit" class="button">Swipe Down</button>
-        </form>
-        <form method="POST" action="/run-script3">
-            <button type="submit" class="button">Block</button>
-        </form>
-        <form method="POST" action="/run-script4">
-            <button type="submit" class="button">Block Live</button>
-        </form>
-        <form method="POST" action="/run-script5">
-            <button type="submit" class="button">Comment</button>
-        </form>
-        <form method="POST" action="/run-script6">
-            <button type="submit" class="button">Back</button>
-        </form>
-            <div id="output">
-                <h3>Script output:</h3>
-                <pre>{output}</pre>
-            </div>
-        '''
-    except subprocess.CalledProcessError as e:
-        error = e.stderr.decode('utf-8')
-        return f'''
-        <link rel="stylesheet" type="text/css" href="/static/styles.css">
-        <form method="POST" action="/run-script1">
-            <button type="submit" class="button">Swipe Up</button>
-        </form>
-        <form method="POST" action="/run-script2">
-            <button type="submit" class="button">Swipe Down</button>
-        </form>
-        <form method="POST" action="/run-script3">
-            <button type="submit" class="button">Block</button>
-        </form>
-        <form method="POST" action="/run-script4">
-            <button type="submit" class="button">Block Live</button>
-        </form>
-        <form method="POST" action="/run-script5">
-            <button type="submit" class="button">Comment</button>
-        </form>
-        <form method="POST" action="/run-script6">
-            <button type="submit" class="button">Back</button>
-        </form>
-            <div id="output">
-                <h3>An error occurred:</h3>
-                <pre>{error}</pre>
-            </div>
-        '''
+def get_buttons():
+    return [(label, f"/run-script/{label.replace(' ', '-').lower()}") for label in commands.keys()]
 
 if __name__ == '__main__':
     app.run(debug=True, port=8000)

@@ -1,0 +1,26 @@
+<!-- templates/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="/static/styles.css">
+    <title>Control Panel</title>
+</head>
+<body>
+    {% for label, action in buttons %}
+    <form method="POST" action="{{ action }}">
+        <button type="submit" class="button">{{ label }}</button>
+    </form>
+    {% endfor %}
+    <div id="output">
+        {% if output %}
+        <h3>Script output:</h3>
+        <pre>{{ output }}</pre>
+        {% elif error %}
+        <h3>An error occurred:</h3>
+        <pre>{{ error }}</pre>
+        {% endif %}
+    </div>
+</body>
+</html>
