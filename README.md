@@ -16,8 +16,8 @@ Due to suboptimal algorithm performance, it can effortlessly block bot accounts 
 7. Run `python tiktok.py`
 
 ## Functions 
-Swipe Up: swipes up
-Swipe Down: swipes down
-Block: blocks an account by clicking on the profile picture
-Block Live: blocks an account by swiping to the left
+Swipe Up: swipes up<br>
+Swipe Down: swipes down<br>
+Block: blocks an account by clicking on the profile picture<br>
+Block Live: blocks an account by swiping to the left<br>
 Comment: open comment for `n` seconds
